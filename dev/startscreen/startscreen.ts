@@ -5,6 +5,9 @@ class StartScreen {
     private startbtn : HTMLElement
     private startmodal : HTMLElement
     private starttext : HTMLElement
+    private explanation : HTMLElement
+    private balks : HTMLElement
+    private points : HTMLElement
     private foreground : Element
     private width: number
     private height: number
@@ -17,12 +20,20 @@ class StartScreen {
         this.startbtn = document.createElement("startbtn")
         this.startmodal = document.createElement("startmodal")
         this.starttext = document.createElement("starttext")
+        this.explanation = document.createElement("explanation")
+        this.balks = document.createElement("balks")
+        this.points = document.createElement("points")
 
         // append modal to foreground
         this.foreground = document.getElementsByTagName("foreground")[0]
         this.foreground.appendChild(this.startmodal)
         this.startmodal.appendChild(this.startbtn)
         this.startmodal.appendChild(this.starttext)
+        this.startmodal.appendChild(this.explanation)
+        this.explanation.appendChild(this.balks)
+        this.explanation.appendChild(this.points)
+
+        this.points.innerHTML = "10 Points - Large paddle <br>  &nbsp;&nbsp;10 Points - Normal paddle <br> 10 Points - Small paddle <br> 25 Points - Small paddle <br> 50 Points - Small paddle"
 
         this.startbtn.addEventListener("click", ()=> this.switchScreens())
     }

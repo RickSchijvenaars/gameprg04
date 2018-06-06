@@ -23,6 +23,20 @@ var Game = (function () {
         this.currentscreen = new StartScreen(this, this.width, this.height);
         this.gameLoop();
     }
+    Object.defineProperty(Game.prototype, "getWidth", {
+        get: function () {
+            return this.width;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Game.prototype, "getHeight", {
+        get: function () {
+            return this.height;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Game.prototype.gameLoop = function () {
         var _this = this;
         this.currentscreen.update();
@@ -39,26 +53,33 @@ var Game = (function () {
 }());
 window.addEventListener("load", function () { return new Game(); });
 var GameOver = (function () {
-    function GameOver(g) {
+    function GameOver(game, gamescreen) {
         var _this = this;
-        this.game = g;
+        this.game = game;
+        this.gamescreen = gamescreen;
+        var container = document.getElementsByTagName("container")[0];
+        container.classList.replace("gamebg", "startbg");
         this.restartbtn = document.createElement("startbtn");
         this.restartmodal = document.createElement("startmodal");
         this.restarttext = document.createElement("starttext");
+        this.highscore = document.createElement("highscore");
         var foreground = document.getElementsByTagName("foreground")[0];
         foreground.appendChild(this.restartmodal);
         this.restartmodal.appendChild(this.restartbtn);
         this.restartmodal.appendChild(this.restarttext);
+        this.restartmodal.appendChild(this.highscore);
         this.restartbtn.addEventListener("click", function () { return _this.switchScreens(); });
     }
     GameOver.prototype.update = function () {
-        this.restartbtn.innerHTML = "RESTART GAME";
-        this.restarttext.innerHTML = "OEPS! Je schip heeft te veel schade gehad. Probeer het opnieuw.";
+        this.restarttext.innerHTML = "GAME OVER!";
+        this.restarttext.style.fontSize = "80px";
+        this.highscore.innerHTML = "HIGHSCORE: " + this.gamescreen.getHighscore;
+        this.restartbtn.innerHTML = "TRY AGAIN";
     };
     GameOver.prototype.switchScreens = function () {
         console.log('switch to gamescreen');
         this.game.emptyScreen();
-        this.game.showScreen(new SpaceGame(this.game));
+        this.game.showScreen(new GameScreen(this.game, this.game.getWidth, this.game.getHeight));
     };
     return GameOver;
 }());
@@ -83,13 +104,26 @@ var Balk = (function (_super) {
     __extends(Balk, _super);
     function Balk(screenWidth, screenHeight, width, height) {
         var _this = _super.call(this, screenWidth, screenHeight, width, height, "balk") || this;
+        _this.margin = [2, 2, 2, 2, 162];
+        _this.class = ["purple", "red", "green", "yellow", "blue"];
+        _this.randomClass = _this.class[Math.floor(Math.random() * _this.class.length)];
+        _this.randomMargin = _this.margin[Math.floor(Math.random() * _this.margin.length)];
         _this.width = width;
         _this.height = height;
-        var type = ["purple", "red", "green", "yellow", "blue", "none"];
-        var random = type[Math.floor(Math.random() * type.length)];
-        _this.object.classList.add(random);
+        _this.object.style.marginLeft = _this.randomMargin + "px";
+        _this.object.classList.add(_this.randomClass);
         return _this;
     }
+    Object.defineProperty(Balk.prototype, "Class", {
+        get: function () {
+            return this.randomClass;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Balk.prototype.remove = function () {
+        this.object.remove();
+    };
     return Balk;
 }(GameObject));
 var Ball = (function (_super) {
@@ -97,16 +131,47 @@ var Ball = (function (_super) {
     function Ball(screenWidth, screenHeight, width, height) {
         var _this = _super.call(this, 0.5 * screenWidth - 0.5 * width, 0.5 * screenHeight - 0.5 * height, width, height, "ball") || this;
         _this.screenWidth = screenWidth;
-        _this.speedX = 8;
-        _this.speedY = 8;
+        _this.speedX = 6 * (Math.floor(Math.random() * 2) == 1 ? 1 : -1);
+        _this.speedY = 6;
         _this.update();
         return _this;
     }
+    Object.defineProperty(Ball.prototype, "getY", {
+        get: function () {
+            return this.yPos;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Ball.prototype, "setY", {
+        set: function (y) {
+            this.yPos = y;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Ball.prototype, "setX", {
+        set: function (x) {
+            this.xPos = x;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Ball.prototype, "setSpeedX", {
+        set: function (speed) {
+            this.speedX = speed;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Ball.prototype.update = function () {
         this.xPos += this.speedX;
         this.yPos += this.speedY;
-        if (this.xPos > this.screenWidth - this.width) {
+        if (this.xPos > this.screenWidth - this.width || this.xPos < 0) {
             this.speedX = this.speedX * -1;
+        }
+        if (this.yPos < 0) {
+            this.speedY = this.speedY * -1;
         }
         this.object.style.transform = "translate(" + this.xPos + "px, " + this.yPos + "px)";
     };
@@ -120,6 +185,8 @@ var GameScreen = (function () {
         this.width = 150;
         this.height = 25;
         this.score = 0;
+        this.highscore = 0;
+        this.lifes = 3;
         this.game = g;
         var container = document.getElementsByTagName("container")[0];
         container.classList.replace("startbg", "gamebg");
@@ -136,12 +203,64 @@ var GameScreen = (function () {
             this.balks.push(balk);
         }
     }
+    Object.defineProperty(GameScreen.prototype, "getHighscore", {
+        get: function () {
+            return this.highscore;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GameScreen.prototype, "Lifes", {
+        set: function (lifes) {
+            this.lifes = lifes;
+        },
+        enumerable: true,
+        configurable: true
+    });
     GameScreen.prototype.update = function () {
         this.paddle.update();
         this.ball.update();
-        this.textfield.innerHTML = "SCORE: " + this.score;
+        this.textfield.innerHTML = "SCORE: " + this.score + " - LEVENS: " + this.lifes;
         if (this.checkCollision(this.ball.getRectangle(), this.paddle.getRectangle())) {
             this.ball.changeDirection();
+        }
+        for (var _i = 0, _a = this.balks; _i < _a.length; _i++) {
+            var balk = _a[_i];
+            if (this.checkCollision(this.ball.getRectangle(), balk.getRectangle())) {
+                balk.remove();
+                this.ball.changeDirection();
+                if (balk.Class == "purple") {
+                    this.score = +this.score + 10;
+                    this.paddle.Width = 150;
+                }
+                if (balk.Class == "red") {
+                    this.score = +this.score + 10;
+                    this.paddle.Width = 100;
+                }
+                if (balk.Class == "green") {
+                    this.score = +this.score + 10;
+                    this.paddle.Width = 50;
+                }
+                if (balk.Class == "yellow") {
+                    this.score = +this.score + 25;
+                }
+                if (balk.Class == "green") {
+                    this.score = +this.score + 50;
+                }
+            }
+        }
+        if (this.ball.getY > 720) {
+            this.ball.setX = 0.5 * this.screenWidth;
+            this.ball.setY = 0.5 * this.screenHeight;
+            this.ball.setSpeedX = 6 * (Math.floor(Math.random() * 2) == 1 ? 1 : -1);
+            this.lifes--;
+        }
+        if (this.lifes == 0) {
+            if (this.score > this.highscore) {
+                this.highscore == this.score;
+            }
+            this.game.emptyScreen();
+            this.game.showScreen(new GameOver(this.game, this));
         }
     };
     GameScreen.prototype.checkCollision = function (a, b) {
@@ -164,6 +283,13 @@ var Paddle = (function (_super) {
         _this.update();
         return _this;
     }
+    Object.defineProperty(Paddle.prototype, "Width", {
+        set: function (width) {
+            this.width = width;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Paddle.prototype.onKeyDown = function (event) {
         switch (event.keyCode) {
             case 37:
@@ -193,9 +319,10 @@ var Paddle = (function (_super) {
         if (this.xPos <= 0) {
             this.xPos = 0;
         }
-        else if (this.xPos >= 1280 - this.width) {
+        if (this.xPos >= 1280 - this.width) {
             this.xPos = 1280 - this.width;
         }
+        this.object.style.width = this.width + "px";
         this.object.style.transform = "translate(" + this.xPos + "px, " + this.yPos + "px)";
     };
     return Paddle;
@@ -459,10 +586,17 @@ var StartScreen = (function () {
         this.startbtn = document.createElement("startbtn");
         this.startmodal = document.createElement("startmodal");
         this.starttext = document.createElement("starttext");
+        this.explanation = document.createElement("explanation");
+        this.balks = document.createElement("balks");
+        this.points = document.createElement("points");
         this.foreground = document.getElementsByTagName("foreground")[0];
         this.foreground.appendChild(this.startmodal);
         this.startmodal.appendChild(this.startbtn);
         this.startmodal.appendChild(this.starttext);
+        this.startmodal.appendChild(this.explanation);
+        this.explanation.appendChild(this.balks);
+        this.explanation.appendChild(this.points);
+        this.points.innerHTML = "10 Points - Large paddle <br>  &nbsp;&nbsp;10 Points - Normal paddle <br> 10 Points - Small paddle <br> 25 Points - Small paddle <br> 50 Points - Small paddle";
         this.startbtn.addEventListener("click", function () { return _this.switchScreens(); });
     }
     StartScreen.prototype.update = function () {

@@ -4,6 +4,14 @@ class Game {
     private width: number = 1280
     private height: number = 720
 
+    public get getWidth() : number {
+        return this.width
+    }
+
+    public get getHeight() : number {
+        return this.height
+    }
+
     constructor() {
         // append container to body
         let container = document.createElement("container")

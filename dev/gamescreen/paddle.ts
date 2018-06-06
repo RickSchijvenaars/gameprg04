@@ -5,10 +5,15 @@ class Paddle extends GameObject {
     private speed : number = 0;
     protected width : number
     protected height : number
+   
+    public set Width(width : number){
+        this.width = width
+    }
+    
 
     constructor(screenWidth : number, screenHeight : number, width : number, height : number) {
-
         super(screenWidth, screenHeight, width, height, "paddle")
+
         this.width = width
         this.height = height
         window.addEventListener("keydown", (e:KeyboardEvent) => this.onKeyDown(e))
@@ -47,9 +52,12 @@ class Paddle extends GameObject {
         this.xPos += this.speed 
         if(this.xPos <= 0){
             this.xPos = 0
-        }else if(this.xPos >= 1280 - this.width) {
+        }
+        if(this.xPos >= 1280 - this.width) {
             this.xPos = 1280 - this.width
         }    
+
+        this.object.style.width = this.width + "px"
         this.object.style.transform = `translate(${this.xPos}px, ${this.yPos}px)`
     }
 
