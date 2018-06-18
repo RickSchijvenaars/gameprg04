@@ -73,7 +73,7 @@ var GameOver = (function () {
     GameOver.prototype.update = function () {
         this.restarttext.innerHTML = "GAME OVER!";
         this.restarttext.style.fontSize = "80px";
-        this.highscore.innerHTML = "HIGHSCORE: " + this.gamescreen.getHighscore;
+        this.highscore.innerHTML = "PERSONAL HIGHSCORE: " + localStorage.getItem('highscore');
         this.restartbtn.innerHTML = "TRY AGAIN";
     };
     GameOver.prototype.switchScreens = function () {
@@ -102,15 +102,15 @@ var GameObject = (function () {
 }());
 var Balk = (function (_super) {
     __extends(Balk, _super);
-    function Balk(screenWidth, screenHeight, width, height) {
-        var _this = _super.call(this, screenWidth, screenHeight, width, height, "balk") || this;
-        _this.margin = [2, 2, 2, 2, 162];
+    function Balk(gamescreen, xPos, yPos, width, height) {
+        var _this = _super.call(this, xPos, yPos, width, height, "balk") || this;
         _this.class = ["purple", "red", "green", "yellow", "blue"];
         _this.randomClass = _this.class[Math.floor(Math.random() * _this.class.length)];
-        _this.randomMargin = _this.margin[Math.floor(Math.random() * _this.margin.length)];
         _this.width = width;
         _this.height = height;
-        _this.object.style.marginLeft = _this.randomMargin + "px";
+        _this.gamescreen = gamescreen;
+        _this.object.style.marginLeft = xPos + "px";
+        _this.object.style.marginTop = yPos + "px";
         _this.object.classList.add(_this.randomClass);
         return _this;
     }
@@ -123,6 +123,14 @@ var Balk = (function (_super) {
     });
     Balk.prototype.remove = function () {
         this.object.remove();
+        this.removeFromArray(this);
+    };
+    Balk.prototype.removeFromArray = function (removeMe) {
+        for (var i = 0; i < this.gamescreen.balksArray.length; i++) {
+            if (this.gamescreen.balksArray[i] === removeMe) {
+                this.gamescreen.balksArray.splice(i, 1);
+            }
+        }
     };
     return Balk;
 }(GameObject));
@@ -178,6 +186,27 @@ var Ball = (function (_super) {
     Ball.prototype.changeDirection = function () {
         this.speedY = this.speedY * -1;
     };
+    Ball.prototype.changeSpeed = function () {
+        var posSpeeds = [6, 7, 8, 9, 10, 11];
+        var negSpeeds = [-6, -7, -8, -9, -10, -11];
+        if (this.speedX < 0 && this.speedY < 0) {
+            this.speedX = negSpeeds[Math.floor(Math.random() * negSpeeds.length)];
+            this.speedY = posSpeeds[Math.floor(Math.random() * posSpeeds.length)];
+        }
+        if (this.speedX > 0 && this.speedY > 0) {
+            this.speedX = posSpeeds[Math.floor(Math.random() * posSpeeds.length)];
+            this.speedY = negSpeeds[Math.floor(Math.random() * negSpeeds.length)];
+        }
+        if (this.speedX < 0 && this.speedY > 0) {
+            this.speedX = negSpeeds[Math.floor(Math.random() * negSpeeds.length)];
+            this.speedY = negSpeeds[Math.floor(Math.random() * negSpeeds.length)];
+        }
+        if (this.speedX > 0 && this.speedY < 0) {
+            this.speedX = posSpeeds[Math.floor(Math.random() * posSpeeds.length)];
+            this.speedY = negSpeeds[Math.floor(Math.random() * negSpeeds.length)];
+        }
+        console.log(this.speedX, this.speedY);
+    };
     return Ball;
 }(GameObject));
 var GameScreen = (function () {
@@ -185,7 +214,7 @@ var GameScreen = (function () {
         this.width = 150;
         this.height = 25;
         this.score = 0;
-        this.highscore = 0;
+        this.highscore = localStorage.getItem('highscore');
         this.lifes = 3;
         this.game = g;
         var container = document.getElementsByTagName("container")[0];
@@ -198,18 +227,8 @@ var GameScreen = (function () {
         this.paddle = new Paddle(0.5 * this.screenWidth - 0.5 * this.width, this.screenHeight - 70, this.width, this.height);
         this.ball = new Ball(this.screenWidth, this.screenHeight, 35, 35);
         this.balks = [];
-        for (var i = 0; i < 48; i++) {
-            var balk = new Balk(0, 0, 156, 25);
-            this.balks.push(balk);
-        }
+        this.createBalks();
     }
-    Object.defineProperty(GameScreen.prototype, "getHighscore", {
-        get: function () {
-            return this.highscore;
-        },
-        enumerable: true,
-        configurable: true
-    });
     Object.defineProperty(GameScreen.prototype, "Lifes", {
         set: function (lifes) {
             this.lifes = lifes;
@@ -217,12 +236,34 @@ var GameScreen = (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(GameScreen.prototype, "balksArray", {
+        get: function () {
+            return this.balks;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    GameScreen.prototype.createBalks = function () {
+        var positions = [160, 160, 160, 160, 320];
+        var left = 2;
+        var top = 2;
+        for (var i = 0; i < 48; i++) {
+            var xPos = positions[Math.floor(Math.random() * positions.length)];
+            var balk = new Balk(this, left, top, 156, 25);
+            left = left + xPos;
+            if (left > 1280) {
+                top = top + 29;
+                left = 2;
+            }
+            this.balks.push(balk);
+        }
+    };
     GameScreen.prototype.update = function () {
         this.paddle.update();
         this.ball.update();
         this.textfield.innerHTML = "SCORE: " + this.score + " - LEVENS: " + this.lifes;
         if (this.checkCollision(this.ball.getRectangle(), this.paddle.getRectangle())) {
-            this.ball.changeDirection();
+            this.ball.changeSpeed();
         }
         for (var _i = 0, _a = this.balks; _i < _a.length; _i++) {
             var balk = _a[_i];
@@ -255,9 +296,16 @@ var GameScreen = (function () {
             this.ball.setSpeedX = 6 * (Math.floor(Math.random() * 2) == 1 ? 1 : -1);
             this.lifes--;
         }
+        if (this.balks.length == 0) {
+            this.ball.setX = 0.5 * this.screenWidth;
+            this.ball.setY = 0.5 * this.screenHeight;
+            this.ball.setSpeedX = 6 * (Math.floor(Math.random() * 2) == 1 ? 1 : -1);
+            this.createBalks();
+        }
         if (this.lifes == 0) {
             if (this.score > this.highscore) {
-                this.highscore == this.score;
+                this.newHighscore = this.score.toString();
+                localStorage.setItem('highscore', this.newHighscore);
             }
             this.game.emptyScreen();
             this.game.showScreen(new GameOver(this.game, this));
@@ -327,256 +375,6 @@ var Paddle = (function (_super) {
     };
     return Paddle;
 }(GameObject));
-var Asteroid = (function () {
-    function Asteroid(g) {
-        this.spacegame = g;
-        var foreground = document.getElementsByTagName("foreground")[0];
-        this.asteroidSize = Math.floor((Math.random() * 250) + 50);
-        this.asteroidImage = new Image(this.asteroidSize, this.asteroidSize);
-        this.asteroidImage.src = 'images/asteroid.png';
-        this.speed = Math.floor((Math.random() * 5) + 3);
-        this.availableWidth = 1280 - this.asteroidSize;
-        this.x = Math.floor((Math.random() * this.availableWidth) + 1);
-        this.y = 0 - this.asteroidSize;
-        this.hitbox = document.createElement("hitbox");
-        this.hitbox.style.height = this.asteroidSize + "px";
-        this.hitbox.style.width = this.asteroidSize + "px";
-        if (this.asteroidSize > 40) {
-            this.hitbox.style.left = "-20px";
-            this.hitbox.style.top = "-15px";
-        }
-        if (this.asteroidSize > 100) {
-            this.hitbox.style.left = "-15px";
-            this.hitbox.style.top = "-15px";
-        }
-        if (this.asteroidSize > 160) {
-            this.hitbox.style.left = "-15px";
-            this.hitbox.style.top = "-15px";
-        }
-        this.asteroid = document.createElement("asteroid");
-        foreground.appendChild(this.asteroid);
-        this.asteroid.appendChild(this.asteroidImage);
-        this.asteroid.appendChild(this.hitbox);
-        console.log('Created asteroid');
-    }
-    Asteroid.prototype.update = function () {
-        this.y += this.speed;
-        this.asteroid.style.transform = "translate(" + this.x + "px," + this.y + "px)";
-        if (this.y > 720 + this.asteroidSize) {
-            this.reset();
-        }
-    };
-    Asteroid.prototype.reset = function () {
-        this.speed = Math.floor((Math.random() * 5) + 3);
-        this.asteroidSize = Math.floor((Math.random() * 250) + 50);
-        this.availableWidth = 1280 - this.asteroidSize;
-        this.x = Math.floor((Math.random() * this.availableWidth) + 1);
-        this.asteroidImage.src = 'images/asteroid.png';
-        this.y = 0 - this.asteroidSize;
-    };
-    Asteroid.prototype.getRectangle = function () {
-        return this.hitbox.getBoundingClientRect();
-    };
-    return Asteroid;
-}());
-var Background = (function () {
-    function Background() {
-        this.width = 1280;
-        this.height = 720;
-        this.yPos = 0;
-        this.background = new Image(this.width, this.height);
-        this.background.setAttribute("id", "background");
-        var foreground = document.getElementsByTagName("foreground")[0];
-        foreground.appendChild(this.background);
-        console.log('Created background');
-    }
-    Background.prototype.loop = function () {
-        this.yPos = this.yPos + 2;
-        this.background.style.backgroundPosition = '0px ' + this.yPos + 'px';
-    };
-    return Background;
-}());
-var Laser = (function () {
-    function Laser(x) {
-        this.laserWidth = 15;
-        this.laserHeight = 32;
-        this.y = 520;
-        this.x = x - 0.5 * this.laserWidth;
-        this.laser = new Image(this.laserWidth, this.laserHeight);
-        this.laser.setAttribute('style', 'left:' + this.x + 'px;top:0px;');
-        this.laser.classList.add('laser');
-        this.laser.src = 'images/laser.png';
-        var foreground = document.getElementsByTagName("foreground")[0];
-        foreground.appendChild(this.laser);
-        this.update();
-        console.log('Created laser');
-    }
-    Laser.prototype.update = function () {
-        this.y = this.y - 5;
-        this.laser.style.transform = "translate(0px," + this.y + "px)";
-        if (this.y < 0 - this.laserHeight) {
-            this.laser.remove();
-        }
-    };
-    Laser.prototype.remove = function () {
-        this.laser.remove();
-    };
-    Laser.prototype.getRectangle = function () {
-        return this.laser.getBoundingClientRect();
-    };
-    return Laser;
-}());
-var SpaceGame = (function () {
-    function SpaceGame(g) {
-        this.levens = 3;
-        this.time = 0;
-        this.afstand = 200000000;
-        this.game = g;
-        this.background = new Background();
-        this.spaceship = new Spaceship(this);
-        this.foreground = document.getElementsByTagName("foreground")[0];
-        this.textfield = document.createElement("textfield");
-        this.foreground.appendChild(this.textfield);
-        this.asteroids = [];
-        this.lasers = [];
-        for (var i = 0; i < 6; i++) {
-            var asteroid = new Asteroid(this);
-            this.asteroids.push(asteroid);
-            asteroid.update();
-        }
-    }
-    Object.defineProperty(SpaceGame.prototype, "Time", {
-        get: function () {
-            return this.time;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    SpaceGame.prototype.update = function () {
-        this.spaceship.update();
-        this.textfield.innerHTML = "LEVENS: " + this.levens + " -  AFSTAND: " + this.afstand + "km";
-        this.textfield.setAttribute("style", "font-size:30px;width:1000px;");
-        for (var _i = 0, _a = this.lasers; _i < _a.length; _i++) {
-            var l = _a[_i];
-            l.update();
-        }
-        for (var _b = 0, _c = this.asteroids; _b < _c.length; _b++) {
-            var asteroid = _c[_b];
-            asteroid.update();
-            if (this.checkCollision(this.spaceship.getRectangle(), asteroid.getRectangle())) {
-                asteroid.reset();
-                if (this.levens > 0) {
-                    this.levens--;
-                }
-                console.log("ship hits asteroid");
-            }
-            for (var _d = 0, _e = this.lasers; _d < _e.length; _d++) {
-                var las = _e[_d];
-                if (this.checkCollision(las.getRectangle(), asteroid.getRectangle())) {
-                    console.log("asteroid hits one of the lasers");
-                    asteroid.reset();
-                    las.remove();
-                }
-            }
-        }
-        if (this.levens == 0) {
-            this.game.emptyScreen();
-            this.game.showScreen(new GameOver(this.game));
-        }
-        if (this.time == 2000) {
-            this.textfield.innerHTML = "GEHAALD";
-            this.textfield.setAttribute("style", "font-size:30px");
-        }
-        this.time++;
-        this.afstand = this.afstand - 20000;
-        this.background.loop();
-    };
-    SpaceGame.prototype.addLaser = function (l) {
-        this.lasers.push(l);
-    };
-    SpaceGame.prototype.checkCollision = function (a, b) {
-        return (a.left <= b.right &&
-            b.left <= a.right &&
-            a.top <= b.bottom &&
-            b.top <= a.bottom);
-    };
-    return SpaceGame;
-}());
-var Spaceship = (function () {
-    function Spaceship(g) {
-        var _this = this;
-        this.width = 100;
-        this.height = 150;
-        this.x = 0.5 * 1280 - 0.5 * this.width;
-        this.y = 720 - this.height - 50;
-        this.speed = 0;
-        this.spacegame = g;
-        this.spaceshipImage = new Image(this.width, this.height);
-        this.spaceshipImage.src = 'images/ship.png';
-        this.spaceshipImage.setAttribute("id", "spaceship");
-        this.hitbox = document.createElement("hitbox");
-        this.spaceship = document.createElement("spaceship");
-        var foreground = document.getElementsByTagName("foreground")[0];
-        foreground.appendChild(this.spaceship);
-        this.spaceship.appendChild(this.spaceshipImage);
-        this.spaceship.appendChild(this.hitbox);
-        this.hitbox.style.height = '130px';
-        this.hitbox.style.width = '60px';
-        window.addEventListener("keydown", function (e) { return _this.onKeyDown(e); });
-        window.addEventListener("keyup", function (e) { return _this.onKeyUp(e); });
-        console.log('Created spaceship');
-    }
-    Spaceship.prototype.onKeyDown = function (event) {
-        switch (event.keyCode) {
-            case 37:
-            case 65:
-                this.speed = -10;
-                break;
-            case 39:
-            case 68:
-                this.speed = 10;
-                break;
-            case 32:
-                var laserAmount = document.getElementsByClassName('laser').length;
-                if (laserAmount < 4) {
-                    var laser = new Laser(this.x + 0.5 * this.width);
-                    this.spacegame.addLaser(laser);
-                }
-                break;
-        }
-    };
-    Spaceship.prototype.onKeyUp = function (event) {
-        switch (event.keyCode) {
-            case 37:
-            case 65:
-                this.speed = 0;
-                break;
-            case 39:
-            case 68:
-                this.speed = 0;
-                break;
-            case 32:
-                break;
-        }
-    };
-    Spaceship.prototype.update = function () {
-        this.x += this.speed;
-        if (this.x <= 0) {
-            this.x = 0;
-        }
-        else if (this.x >= 1280 - this.width) {
-            this.x = 1280 - this.width;
-        }
-        this.spaceship.style.transform = "translate(" + this.x + "px, " + this.y + "px)";
-    };
-    Spaceship.prototype.explode = function () {
-        this.spaceshipImage.src = 'images/explosion.gif';
-    };
-    Spaceship.prototype.getRectangle = function () {
-        return this.hitbox.getBoundingClientRect();
-    };
-    return Spaceship;
-}());
 var StartScreen = (function () {
     function StartScreen(g, width, height) {
         var _this = this;

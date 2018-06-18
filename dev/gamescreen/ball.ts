@@ -49,6 +49,29 @@ class Ball extends GameObject {
     }
 
     public changeDirection() {
-            this.speedY = this.speedY * -1
+        this.speedY = this.speedY * -1
+    }
+
+    public changeSpeed() {
+        let posSpeeds: Array<number> = [ 6, 7, 8, 9, 10, 11]
+        let negSpeeds: Array<number> = [-6, -7, -8, -9, -10, -11]
+
+        if (this.speedX < 0 && this.speedY < 0){
+            this.speedX = negSpeeds[Math.floor(Math.random()*negSpeeds.length)]
+            this.speedY = posSpeeds[Math.floor(Math.random()*posSpeeds.length)]
+        }
+        if (this.speedX > 0 && this.speedY > 0){
+            this.speedX = posSpeeds[Math.floor(Math.random()*posSpeeds.length)]
+            this.speedY = negSpeeds[Math.floor(Math.random()*negSpeeds.length)]
+        }
+        if (this.speedX < 0 && this.speedY > 0){
+            this.speedX = negSpeeds[Math.floor(Math.random()*negSpeeds.length)]
+            this.speedY = negSpeeds[Math.floor(Math.random()*negSpeeds.length)]
+        }
+        if (this.speedX > 0 && this.speedY < 0){
+            this.speedX = posSpeeds[Math.floor(Math.random()*posSpeeds.length)]
+            this.speedY = negSpeeds[Math.floor(Math.random()*negSpeeds.length)]
+        }
+        console.log(this.speedX, this.speedY)
     }
 }

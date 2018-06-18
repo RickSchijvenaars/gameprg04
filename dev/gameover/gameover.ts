@@ -35,7 +35,7 @@ class GameOver {
         this.restarttext.innerHTML = "GAME OVER!"
         this.restarttext.style.fontSize = "80px"
 
-        this.highscore.innerHTML = "HIGHSCORE: " + this.gamescreen.getHighscore
+        this.highscore.innerHTML = "PERSONAL HIGHSCORE: " + localStorage.getItem('highscore');
 
         this.restartbtn.innerHTML = "TRY AGAIN"
     }

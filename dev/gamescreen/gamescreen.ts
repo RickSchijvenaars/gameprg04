@@ -9,20 +9,21 @@ class GameScreen{
     private game:Game
     private foreground:Element
     private textfield: HTMLElement
-    private score: Number = 0
-    private highscore: number = 0
+    private score: number = 0
+    private newHighscore : string
+    private highscore: any = localStorage.getItem('highscore');
     private lifes: number = 3
     private balks : Balk[]
-
-    public get getHighscore() : number {
-        return this.highscore
-    }
 
     public set Lifes(lifes : number){
         this.lifes = lifes 
     }
-    
 
+    public get balksArray() : Balk[] {
+        return this.balks
+    }
+    
+    
     constructor(g:Game, width:number, height:number){
         this.game = g
         
@@ -40,11 +41,24 @@ class GameScreen{
         this.ball = new Ball(this.screenWidth,this.screenHeight, 35, 35)
 
         this.balks = []
+        this.createBalks()        
+    }
 
+    public createBalks():void{
+        let positions: Array<number> = [160, 160, 160, 160, 320]
+        let left = 2
+        let top = 2
         for(let i = 0; i < 48; i++){ //create balks
-            let balk = new Balk(0, 0, 156, 25)
+            let xPos = positions[Math.floor(Math.random()*positions.length)]
+            let balk = new Balk(this, left, top, 156, 25)
+            left = left + xPos
+
+            if(left > 1280){
+                top = top + 29
+                left = 2
+            }
+
             this.balks.push(balk)
-            //balk.update()
         }
     }
 
@@ -54,7 +68,7 @@ class GameScreen{
         this.textfield.innerHTML = "SCORE: " +this.score+ " - LEVENS: " + this.lifes
       
         if (this.checkCollision(this.ball.getRectangle(), this.paddle.getRectangle())) {
-            this.ball.changeDirection()
+            this.ball.changeSpeed()
         }
 
         for(let balk of this.balks) { // loop through all balks
@@ -89,9 +103,17 @@ class GameScreen{
             this.lifes--
         }
 
+        if(this.balks.length == 0){
+            this.ball.setX = 0.5 * this.screenWidth
+            this.ball.setY = 0.5 * this.screenHeight
+            this.ball.setSpeedX = 6 * (Math.floor(Math.random()*2) == 1 ? 1 : -1)
+            this.createBalks()
+        }
+
         if (this.lifes == 0){    
             if(this.score > this.highscore){
-                this.highscore == this.score
+                this.newHighscore = this.score.toString()
+                localStorage.setItem('highscore', this.newHighscore);
             }
             this.game.emptyScreen()
             this.game.showScreen(new GameOver(this.game, this))
