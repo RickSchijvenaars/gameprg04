@@ -77,7 +77,6 @@ var GameOver = (function () {
         this.restartbtn.innerHTML = "TRY AGAIN";
     };
     GameOver.prototype.switchScreens = function () {
-        console.log('switch to gamescreen');
         this.game.emptyScreen();
         this.game.showScreen(new GameScreen(this.game, this.game.getWidth, this.game.getHeight));
     };
@@ -205,14 +204,11 @@ var Ball = (function (_super) {
             this.speedX = posSpeeds[Math.floor(Math.random() * posSpeeds.length)];
             this.speedY = negSpeeds[Math.floor(Math.random() * negSpeeds.length)];
         }
-        console.log(this.speedX, this.speedY);
     };
     return Ball;
 }(GameObject));
 var GameScreen = (function () {
     function GameScreen(g, width, height) {
-        this.width = 150;
-        this.height = 25;
         this.score = 0;
         this.highscore = localStorage.getItem('highscore');
         this.lifes = 3;
@@ -224,7 +220,7 @@ var GameScreen = (function () {
         this.foreground.appendChild(this.textfield);
         this.screenWidth = width;
         this.screenHeight = height;
-        this.paddle = new Paddle(0.5 * this.screenWidth - 0.5 * this.width, this.screenHeight - 70, this.width, this.height);
+        this.paddle = new Paddle(0.5 * this.screenWidth - 0.5 * 150, this.screenHeight - 70, 150, 25);
         this.ball = new Ball(this.screenWidth, this.screenHeight, 35, 35);
         this.balks = [];
         this.createBalks();

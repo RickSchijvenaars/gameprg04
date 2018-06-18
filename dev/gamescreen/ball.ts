@@ -72,6 +72,5 @@ class Ball extends GameObject {
             this.speedX = posSpeeds[Math.floor(Math.random()*posSpeeds.length)]
             this.speedY = negSpeeds[Math.floor(Math.random()*negSpeeds.length)]
         }
-        console.log(this.speedX, this.speedY)
     }
 }

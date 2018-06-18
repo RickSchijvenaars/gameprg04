@@ -2,8 +2,6 @@ class GameScreen{
 
     private screenWidth: number
     private screenHeight: number
-    private width: number = 150
-    private height: number = 25
     private paddle:Paddle
     private ball: Ball
     private game:Game
@@ -37,7 +35,7 @@ class GameScreen{
 
         this.screenWidth = width
         this.screenHeight = height
-        this.paddle = new Paddle(0.5 * this.screenWidth - 0.5 * this.width, this.screenHeight - 70, this.width, this.height)
+        this.paddle = new Paddle(0.5 * this.screenWidth - 0.5 * 150, this.screenHeight - 70, 150, 25)
         this.ball = new Ball(this.screenWidth,this.screenHeight, 35, 35)
 
         this.balks = []

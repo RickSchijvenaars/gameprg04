@@ -3,8 +3,6 @@
 class Paddle extends GameObject {
         
     private speed : number = 0;
-    protected width : number
-    protected height : number
    
     public set Width(width : number){
         this.width = width

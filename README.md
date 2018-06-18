@@ -12,11 +12,11 @@ Toch moet ik soms de waarde van een variable van een object aanpassen vanaf buit
 Ook maak ik gebruik van composition. Zo heb ik 3 verschillende schermen waar ik gebruik van maak: een startscreen, een gamescreen en een gameoverscreen. Wanneer er op de startbutton van mijn startscreen wordt geklikt komt de gamescreen tevoorschijn. De gamescreen create de bal, paddle en balken. Wanneer de levens van de speler op zijn; create de gamescreen ook een nieuw gameoverscreen. De objecten en screens zijn dus afhankelijk van hun 'parent' of ze aangemaakt worden of niet.
 
 - Inheritance:
-Voor het aanmaken van objecten in mijn game (paddle, balk, ball) maak ik gebruik van een class 'GameObject'. Dit is eigenlijk de 'parent' van alle objecten. Hierin staan de variables die bij ieder object hetzelfde zijn, in mijn game zijn dat de positie, hoogte en breedte. Ook functies die overeenkomen bij de objecten kun je hier gebruiken. Ik gebruik de 'update' functie die ervoor zorgt dat de ball en paddle kunnen bewegen op het scherm.
+Voor het aanmaken van objecten in mijn game (paddle, balk, ball) maak ik gebruik van een class 'GameObject'. Dit is eigenlijk de 'parent' van alle objecten. Hierin staan eigenschappen die in ieder object voorkomen, in mijn game zijn dat de positie, hoogte en breedte. Ook functies die overeenkomen bij de objecten kun je hier gebruiken. Ik gebruik de 'getRectangle' functie die om de positie en omvang van een object te bepalen (collision).
 Het doel van een 'parentobject' is het vermijden van dubbele code, zo hoef je niet in ieder object aparte variables aan te maken.
 
 
 Klassendiagram:
-https://drive.google.com/open?id=1gfBtAcwyFgewJ_XEPh_VAPKqqJSdK8jI
+https://drive.google.com/open?id=1OvKRhSjeKYlCEU9GL4goOOHryJ3X4lgI
 
 PeerReview:
