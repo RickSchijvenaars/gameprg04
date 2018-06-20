@@ -10,7 +10,7 @@ Toch moet ik soms de waarde van een variable van een object aanpassen vanaf buit
 
 Code-voorbeeld private variables en public function:
 
-`
+```
 class Balk extends GameObject {
 
     private class: Array<string> = ["purple","red", "green", "yellow", "blue"]
@@ -20,7 +20,7 @@ class Balk extends GameObject {
     public get Class() : string {
         return this.randomClass
     }
-`
+```
 
 #### Composition:
 Ook maak ik gebruik van composition. Zo heb ik 3 verschillende schermen waar ik gebruik van maak: een startscreen, een gamescreen en een gameoverscreen. Wanneer er op de startbutton van mijn startscreen wordt geklikt komt de gamescreen tevoorschijn. De gamescreen create de bal, paddle en balken. Wanneer de levens van de speler op zijn; create de gamescreen ook een nieuw gameoverscreen. De objecten en screens zijn dus afhankelijk van hun 'parent' of ze aangemaakt worden of niet.
