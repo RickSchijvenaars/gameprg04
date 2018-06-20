@@ -20,3 +20,4 @@ Klassendiagram:
 https://drive.google.com/open?id=1OvKRhSjeKYlCEU9GL4goOOHryJ3X4lgI
 
 PeerReview:
+https://stud.hosted.hr.nl/0950005/2018/06/13/review-game-gijs-bijvoets/
