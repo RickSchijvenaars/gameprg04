@@ -9,7 +9,8 @@ In mijn code heb ik iedere variable/eigenschap van een object/class 'private' ge
 Toch moet ik soms de waarde van een variable van een object aanpassen vanaf buiten het object zelf. In mijn game bijvoorbeeld de breedte van de paddle wanneer er een bepaalde kleur balk geraakt wordt. Dit heb ik gedaan door het maken van een functie die de waarde van de breedte aanpast. De functie roep ik van buitenaf aan en geef ik de nieuwe breedte als waarde mee. Het object paddle verandert zo zijn breedte.
 
 Code-voorbeeld private variables en public function:
-`class Balk extends GameObject {
+`
+class Balk extends GameObject {
 
     private class: Array<string> = ["purple","red", "green", "yellow", "blue"]
     private randomClass = this.class[Math.floor(Math.random()*this.class.length)]
