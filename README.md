@@ -25,9 +25,46 @@ class Balk extends GameObject {
 #### Composition:
 Ook maak ik gebruik van composition. Zo heb ik 3 verschillende schermen waar ik gebruik van maak: een startscreen, een gamescreen en een gameoverscreen. Wanneer er op de startbutton van mijn startscreen wordt geklikt komt de gamescreen tevoorschijn. De gamescreen create de bal, paddle en balken. Wanneer de levens van de speler op zijn; create de gamescreen ook een nieuw gameoverscreen. De objecten en screens zijn dus afhankelijk van hun 'parent' of ze aangemaakt worden of niet.
 
+In class GameScreen wordt een Paddle en Ball aangemaakt:
+```
+class GameScreen{
+
+    private screenWidth: number
+    private screenHeight: number
+    private paddle:Paddle
+```
+```
+ this.paddle = new Paddle(0.5 * this.screenWidth - 0.5 * 150, this.screenHeight - 70, 150, 25)
+        this.ball = new Ball(this.screenWidth,this.screenHeight, 35, 35)
+```
+
 #### Inheritance:
 Voor het aanmaken van objecten in mijn game (paddle, balk, ball) maak ik gebruik van een class 'GameObject'. Dit is eigenlijk de 'parent' van alle objecten. Hierin staan eigenschappen die in ieder object voorkomen, in mijn game zijn dat de positie, hoogte en breedte. Ook functies die overeenkomen bij de objecten kun je hier gebruiken. Ik gebruik de 'getRectangle' functie die om de positie en omvang van een object te bepalen (collision).
 Het doel van een 'parentobject' is het vermijden van dubbele code, zo hoef je niet in ieder object aparte variables aan te maken.
+
+Class GameObject waar waardes aan een object worden toegekend:
+```
+class GameObject {
+    protected object : HTMLElement
+    protected xPos : number
+    protected yPos : number
+    protected width : number
+    protected height : number
+    protected foreground : Element
+
+    constructor(xPos : number, yPos : number, width : number, height : number, type : string) {
+        this.width = width
+        this.height = height
+        this.xPos = xPos
+        this.yPos = yPos
+        this.foreground = document.getElementsByTagName("foreground")[0]
+
+        this.object = document.createElement(type)
+        this.object.style.width = this.width+"px"
+        this.object.style.height = this.height+"px"
+        this.foreground.appendChild(this.object)
+    }
+```
 
 ## Klassendiagram:
 https://drive.google.com/open?id=1OvKRhSjeKYlCEU9GL4goOOHryJ3X4lgI
