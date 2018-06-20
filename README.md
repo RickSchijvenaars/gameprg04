@@ -8,6 +8,18 @@ Ik gebruik verschillende gameobjecten in mijn game: een paddle, balken en een ba
 In mijn code heb ik iedere variable/eigenschap van een object/class 'private' gemaakt. Dit betekent dat alleen het object zelf de waarde van de variable kan lezen of aanpassen. Het 'private-maken' van een variable zorgt voor extra veiligheid, zo is het namelijk niet mogelijk voor een buitenstaander om de waarde ervan aan te passen of te lezen. Functies daarentegen zijn 'public', zo kun je een functie aanroepen vanaf bijvoorbeeld je gamescreen. In mijn code roep ik bijvoorbeeld in de gamescreen de update-functie van ball aan, waardoor de ball over het scherm beweegt. 
 Toch moet ik soms de waarde van een variable van een object aanpassen vanaf buiten het object zelf. In mijn game bijvoorbeeld de breedte van de paddle wanneer er een bepaalde kleur balk geraakt wordt. Dit heb ik gedaan door het maken van een functie die de waarde van de breedte aanpast. De functie roep ik van buitenaf aan en geef ik de nieuwe breedte als waarde mee. Het object paddle verandert zo zijn breedte.
 
+Code-voorbeeld private variables en public function:
+`class Balk extends GameObject {
+
+    private class: Array<string> = ["purple","red", "green", "yellow", "blue"]
+    private randomClass = this.class[Math.floor(Math.random()*this.class.length)]
+    private gamescreen : GameScreen
+
+    public get Class() : string {
+        return this.randomClass
+    }
+`
+
 #### Composition:
 Ook maak ik gebruik van composition. Zo heb ik 3 verschillende schermen waar ik gebruik van maak: een startscreen, een gamescreen en een gameoverscreen. Wanneer er op de startbutton van mijn startscreen wordt geklikt komt de gamescreen tevoorschijn. De gamescreen create de bal, paddle en balken. Wanneer de levens van de speler op zijn; create de gamescreen ook een nieuw gameoverscreen. De objecten en screens zijn dus afhankelijk van hun 'parent' of ze aangemaakt worden of niet.
 
