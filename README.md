@@ -15,8 +15,8 @@ Ook maak ik gebruik van composition. Zo heb ik 3 verschillende schermen waar ik 
 Voor het aanmaken van objecten in mijn game (paddle, balk, ball) maak ik gebruik van een class 'GameObject'. Dit is eigenlijk de 'parent' van alle objecten. Hierin staan eigenschappen die in ieder object voorkomen, in mijn game zijn dat de positie, hoogte en breedte. Ook functies die overeenkomen bij de objecten kun je hier gebruiken. Ik gebruik de 'getRectangle' functie die om de positie en omvang van een object te bepalen (collision).
 Het doel van een 'parentobject' is het vermijden van dubbele code, zo hoef je niet in ieder object aparte variables aan te maken.
 
-#### Klassendiagram:
+## Klassendiagram:
 https://drive.google.com/open?id=1OvKRhSjeKYlCEU9GL4goOOHryJ3X4lgI
 
-#### PeerReview:
+## PeerReview:
 https://stud.hosted.hr.nl/0950005/2018/06/13/review-game-gijs-bijvoets/
