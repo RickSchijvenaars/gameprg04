@@ -71,3 +71,20 @@ https://drive.google.com/open?id=1OvKRhSjeKYlCEU9GL4goOOHryJ3X4lgI
 
 ## PeerReview:
 https://stud.hosted.hr.nl/0950005/2018/06/13/review-game-gijs-bijvoets/
+
+## Extra uitdaging:
+Als extra uitdaging in mijn game heb ik gekozen voor het inbrengen van een highscore. Dit doe ik door de volgende stukjes code:
+```
+localStorage.getItem('highscore');
+```
+
+```
+if(this.score > this.highscore){
+    this.newHighscore = this.score.toString()
+    localStorage.setItem('highscore', this.newHighscore);
+}
+```
+'localStorage' slaat data op in de webbrowser van de gebruiker voor onbepaalde tijd. Dit maakt het dus erg makkelijk om de highscore bij te houden van de speler. In mijn code kijk ik eerst of de behaalde score hoger is dan de huidige highscore, pas wanneer dit zo is wordt de data overschreven.
+
+## Spel online spelen:
+https://rickschijvenaars.github.io/gameprg04/
